@@ -7,10 +7,10 @@
 // Graph - Using a list of adjacency lists representation
 //
 
-// Student Name :
-// Student Number :
-// Student Name :
-// Student Number :
+// Student Name : Miguel Neto
+// Student Number : 125200
+// Student Name : Diogo Silva
+// Student Number : 125240
 
 /*** COMPLETE THE GraphGetSetAdjacentsTo FUNCTION */
 /*** COMPLETE THE GraphComputeVertexWeights FUNCTION ***/
@@ -71,8 +71,7 @@ int graphEdgesComparator(const void* p1, const void* p2) {
 //
 // Create an empty graph: 0 vertices, 0 edges
 //
-Graph* GraphCreateEmpty(unsigned int indicesRange, int isDigraph,
-                        int isWeighted) {
+Graph* GraphCreateEmpty(unsigned int indicesRange, int isDigraph, int isWeighted) {
   Graph* g = (Graph*)malloc(sizeof(struct _GraphHeader));
   if (g == NULL) abort();
 
@@ -391,10 +390,11 @@ IndicesSet* GraphGetSetAdjacentsTo(const Graph* g, unsigned int v) {
 //
 // Returns an array of size g->indicesRange storing
 // the weight of each vertex, or -1.0 if the vertex
-// does not exist in the given gaph
+// does not exist in the given graph
 // The weight of a vertex is the sum of the weights of its edges
 // If edges have no weights, the weight of a vertex is its degree
-double* GraphComputeVertexWeights(const Graph* g) {
+double* GraphComputeVertexWeights(const Graph* g) { //MIGUEL
+  assert(GraphIsDigraph(g) == 0); //ONLY FOR UNDIRECTED GRAPHS!!! 
   double* weightsArray = malloc(g->indicesRange * sizeof(double));
   if (weightsArray == NULL) abort();
 
@@ -403,9 +403,34 @@ double* GraphComputeVertexWeights(const Graph* g) {
     weightsArray[v] = -1.0;
   }
 
-  //
-  // TO BE COMPLETED
-  //
+  List* vertexList = g->verticesList;
+  
+  if(ListIsEmpty(vertexList)) return weightsArray;
+  
+  ListMoveToHead(vertexList); 
+  for(int i = 0; i<ListGetSize(vertexList); i++){
+    struct _Vertex* v = ListGetCurrentItem(vertexList);
+    double sum = 0;
+    
+    List* edgeList = v->edgesList;
+    ListMoveToHead(edgeList);
+    for(int j = 0; j < ListGetSize(edgeList); j++){
+      struct _Edge* e = ListGetCurrentItem(edgeList);
+
+      if(g->isWeighted == 1){
+        sum += e->weight;
+      }
+      else{
+        sum = v->outDegree;
+        break;
+      }
+
+      ListMoveToNext(edgeList);
+    }
+
+    weightsArray[v->id] = sum;
+    ListMoveToNext(vertexList);
+  }
 
   return weightsArray;
 }
