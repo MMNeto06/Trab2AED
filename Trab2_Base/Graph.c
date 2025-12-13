@@ -265,6 +265,45 @@ Graph* GraphGetSubgraph(const Graph* g, IndicesSet* vertSet) {
   // TO BE COMPLETED
   //
 
+  int vertex = IndicesSetGetFirstElem(vertSet);
+  while (vertex != -1){
+    // 1. Adicionar os vértices ao grafo 
+    GraphAddVertex(new, vertex);
+
+    // 2. Adicionar as arestas entre os vértices
+    IndicesSet* adjSet = GraphGetSetAdjacentsTo(g, vertex);
+    int adjVertex = IndicesSetGetFirstElem(adjSet);
+    while (adjVertex != -1){
+      if (IndicesSetContains(vertSet, adjVertex)){
+        if (g->isWeighted){
+          // DAR REFACTOR NISTO 
+          struct _Vertex search_dummy;
+          search_dummy.id = vertex;
+          ListSearch(g->verticesList, &search_dummy);
+          struct _Vertex* vPtr = ListGetCurrentItem(g->verticesList);
+
+          List* edges = vPtr->edgesList;
+          ListMoveToHead(edges);
+          double weight = 1.0; // default
+          for (int i = 0; i < ListGetSize(edges); i++){
+            struct _Edge* edge = ListGetCurrentItem(edges);
+            if (edge->adjVertex == adjVertex){
+              weight = edge->weight;
+              break;
+            }
+            ListMoveToNext(edges);
+          }
+          GraphAddWeightedEdge(new, vertex, adjVertex, weight);
+        } else {
+          GraphAddEdge(new, vertex, adjVertex);
+        }
+      }
+      adjVertex = IndicesSetGetNextElem(adjSet);
+    }
+    IndicesSetDestroy(adjSet);
+    vertex = IndicesSetGetNextElem(vertSet);
+  }
+
   GraphCheckInvariants(new);
 
   return new;
@@ -376,9 +415,19 @@ IndicesSet* GraphGetSetAdjacentsTo(const Graph* g, unsigned int v) {
 
   IndicesSet* adjacents_set = IndicesSetCreateEmpty(g->indicesRange);
 
-  //
-  // TO BE COMPLETED
-  //
+  struct _Vertex search_dummy;
+  search_dummy.id = v;
+  ListSearch(g->verticesList, (void*)(&search_dummy));
+  struct _Vertex* p = ListGetCurrentItem(g->verticesList);
+
+  List* edges = p->edgesList;
+  ListMoveToHead(edges);
+
+  for (int i = 0; i < ListGetSize(edges); i++){
+    struct _Edge* edge = ListGetCurrentItem(edges);
+    IndicesSetAdd(adjacents_set, (uint16_t)edge->adjVertex);
+    ListMoveToNext(edges);
+  }
 
   return adjacents_set;
 }
