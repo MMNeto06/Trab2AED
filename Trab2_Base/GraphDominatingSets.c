@@ -96,8 +96,7 @@ IndicesSet* GraphComputeMinWeightDominatingSet(const Graph* g) { //MIGUEL
   assert(g != NULL);
   assert(GraphIsDigraph(g) == 0);
   //perguntar se é necessário assertar que é grafo com pesos, provavelmente sim
-
-  // Change this according to your algorithm
+  
   double* pesos = GraphComputeVertexWeights(g);
   IndicesSet* current = IndicesSetCreateEmpty(GraphGetVertexRange(g));
   double bestPeso = -1;
