@@ -307,7 +307,7 @@ Graph* GraphGetSubgraph(const Graph* g, IndicesSet* vertSet) {
       }
       adjVertex = IndicesSetGetNextElem(adjSet);
     }
-    IndicesSetDestroy(adjSet);
+    IndicesSetDestroy(&adjSet);
     vertex = IndicesSetGetNextElem(vertSet);
   }
 
