@@ -34,16 +34,34 @@
 // A dominating set is a set of graph vertices such that every other
 // graph vertex not in the set is adjacent to a graph vertex in the set
 //
-int GraphIsDominatingSet(const Graph* g, IndicesSet* vertSet) {
+int GraphIsDominatingSet(const Graph* g, IndicesSet* vertSet) { //MIGUEL
   assert(g != NULL);
   assert(GraphIsDigraph(g) == 0);
   assert(IndicesSetIsEmpty(vertSet) == 0);
 
-  //
-  // TO BE COMPLETED
-  //
+  IndicesSet* allVerts = GraphGetSetVertices(g);
 
-  return 0;
+  int vIdx = IndicesSetGetFirstElem(allVerts);
+  while(vIdx!=-1){
+    if(!IndicesSetContains(vertSet, vIdx)){
+      IndicesSet* adj = GraphGetSetAdjacentsTo(g,vIdx);
+      IndicesSet* adjCopy = IndicesSetCreateCopy(adj);
+      IndicesSetIntersection(adjCopy, vertSet);
+
+      if(IndicesSetIsEmpty(adjCopy)){
+        IndicesSetDestroy(&adjCopy);
+        IndicesSetDestroy(&adj);
+        IndicesSetDestroy(&allVerts);
+        return 0;
+      }
+
+      IndicesSetDestroy(&adjCopy);
+      IndicesSetDestroy(&adj);  
+    }
+    vIdx = IndicesSetGetNextElem(allVerts);
+  }
+  IndicesSetDestroy(&allVerts);
+  return 1;
 }
 
 //
@@ -74,16 +92,40 @@ IndicesSet* GraphComputeMinDominatingSet(const Graph* g) {
 // using an EXHAUSTIVE SEARCH approach
 // Return the dominating set
 //
-IndicesSet* GraphComputeMinWeightDominatingSet(const Graph* g) {
+IndicesSet* GraphComputeMinWeightDominatingSet(const Graph* g) { //MIGUEL
   assert(g != NULL);
   assert(GraphIsDigraph(g) == 0);
-
-  //
-  // TO BE COMPLETED
-  //
+  //perguntar se é necessário assertar que é grafo com pesos, provavelmente sim
 
   // Change this according to your algorithm
-  IndicesSet* result = IndicesSetCreateEmpty(GraphGetVertexRange(g));
+  double* pesos = GraphComputeVertexWeights(g);
+  IndicesSet* current = IndicesSetCreateEmpty(GraphGetVertexRange(g));
+  double bestPeso = -1;
+  IndicesSet* result = NULL;
 
+  do{
+    if(!IndicesSetIsEmpty(current) && GraphIsDominatingSet(g, current)){
+      double peso = 0;
+      int v = IndicesSetGetFirstElem(current);
+      while(v != -1){
+        peso += pesos[v];
+        v = IndicesSetGetNextElem(current);
+      }
+
+      if(result == NULL || peso < bestPeso){
+        if(result != NULL){
+          IndicesSetDestroy(&result);
+        }
+        result = IndicesSetCreateCopy(current);
+        bestPeso = peso;
+      }
+
+    }
+
+  } while(IndicesSetNextSubset(current) != 0);
+
+  IndicesSetDestroy(&current);
+  free(pesos);
+  
   return result;
 }
