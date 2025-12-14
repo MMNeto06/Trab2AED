@@ -20,14 +20,14 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <float.h>
+#include <limits.h>
 
 #include "Graph.h"
 #include "IndicesSet.h"
 #include "instrumentation.h"
 
-//
-// TO BE COMPLETED
-//
+
 // Check if the given set is a dominating set for the graph
 // Return 1 if true, or 0 otherwise
 //
@@ -64,9 +64,7 @@ int GraphIsDominatingSet(const Graph* g, IndicesSet* vertSet) { //MIGUEL
   return 1;
 }
 
-//
-// TO BE COMPLETED
-//
+
 // Compute a MIN VERTEX DOMINATING SET of the graph
 // using an EXHAUSTIVE SEARCH approach
 // Return the/a dominating set
@@ -75,19 +73,32 @@ IndicesSet* GraphComputeMinDominatingSet(const Graph* g) {
   assert(g != NULL);
   assert(GraphIsDigraph(g) == 0);
 
-  //
-  // TO BE COMPLETED
-  //
+  IndicesSet* result = NULL;
+  IndicesSet* current = IndicesSetCreateEmpty(GraphGetVertexRange(g));
 
-  // Change this according to your algorithm
-  IndicesSet* result = IndicesSetCreateEmpty(GraphGetVertexRange(g));
+  // Na primeira comparação, bestSize deve ser o maior número possível
+  // De modo a que tome o valor do primeiro size
+  int bestSize = INT_MAX;
+
+  do {
+    if (!IndicesSetIsEmpty(current) && GraphIsDominatingSet(g, current)){
+      int size = IndicesSetGetNumElems(current);
+
+      if (size < bestSize){
+        if (result != NULL)
+          IndicesSetDestroy(&result);
+
+        result = IndicesSetCreateCopy(current); 
+        bestSize = size; 
+      }
+    }
+  } while (IndicesSetNextSubset(current));
+
+  IndicesSetDestroy(&current);
 
   return result;
 }
 
-//
-// TO BE COMPLETED
-//
 // Compute a MIN WEIGHT VERTEX DOMINATING SET of the graph
 // using an EXHAUSTIVE SEARCH approach
 // Return the dominating set
@@ -99,7 +110,7 @@ IndicesSet* GraphComputeMinWeightDominatingSet(const Graph* g) { //MIGUEL
   
   double* pesos = GraphComputeVertexWeights(g);
   IndicesSet* current = IndicesSetCreateEmpty(GraphGetVertexRange(g));
-  double bestPeso = -1;
+  double bestPeso = DBL_MAX;
   IndicesSet* result = NULL;
 
   do{
@@ -111,7 +122,7 @@ IndicesSet* GraphComputeMinWeightDominatingSet(const Graph* g) { //MIGUEL
         v = IndicesSetGetNextElem(current);
       }
 
-      if(result == NULL || peso < bestPeso){
+      if(peso < bestPeso){
         if(result != NULL){
           IndicesSetDestroy(&result);
         }

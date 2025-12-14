@@ -248,9 +248,36 @@ Graph* GraphFromFile(FILE* f) {
   return g;
 }
 
-//
-// TO BE COMPLETED
-//
+// Função Auxiliar
+// Permite obter uma lista de arestas
+static List* _GetEdgesList(const Graph* g, int vertex){
+  struct _Vertex search_dummy;
+  search_dummy.id = vertex;
+  ListSearch(g->verticesList, (void*)(&search_dummy));
+  struct _Vertex* vPtr = ListGetCurrentItem(g->verticesList);
+
+  return vPtr->edgesList;
+}
+
+// Função Auxiliar
+// Permite calcular o peso de uma aresta
+static double _GetEdgeWeight(const Graph* g, unsigned int u, unsigned int w){
+  double weight = 1.0; // default
+
+  List* edges = _GetEdgesList(g, u);
+
+  struct _Edge search_dummy; 
+  search_dummy.adjVertex = w; 
+  ListSearch(edges, (void*)(&search_dummy));
+
+  struct _Edge* edge = ListGetCurrentItem(edges);
+  if (edge != NULL && edge->adjVertex == w){
+    weight = edge->weight;
+  }
+
+  return weight;
+}
+
 // Returns a new graph that is the subgraph defined by
 // the vertices in the given set and the edges between them
 // If the set contains all the graph vertices, it is a copy of the given graph
@@ -260,10 +287,6 @@ Graph* GraphGetSubgraph(const Graph* g, IndicesSet* vertSet) {
 
   // The "empty" subgraph
   Graph* new = GraphCreateEmpty(g->indicesRange, g->isDigraph, g->isWeighted);
-
-  //
-  // TO BE COMPLETED
-  //
 
   int vertex = IndicesSetGetFirstElem(vertSet);
   while (vertex != -1){
@@ -276,23 +299,7 @@ Graph* GraphGetSubgraph(const Graph* g, IndicesSet* vertSet) {
     while (adjVertex != -1){
       if (IndicesSetContains(vertSet, adjVertex)){
         if (g->isWeighted){
-          // DAR REFACTOR NISTO 
-          struct _Vertex search_dummy;
-          search_dummy.id = vertex;
-          ListSearch(g->verticesList, &search_dummy);
-          struct _Vertex* vPtr = ListGetCurrentItem(g->verticesList);
-
-          List* edges = vPtr->edgesList;
-          ListMoveToHead(edges);
-          double weight = 1.0; // default
-          for (int i = 0; i < ListGetSize(edges); i++){
-            struct _Edge* edge = ListGetCurrentItem(edges);
-            if (edge->adjVertex == adjVertex){
-              weight = edge->weight;
-              break;
-            }
-            ListMoveToNext(edges);
-          }
+          double weight = _GetEdgeWeight(g, vertex, adjVertex);
           GraphAddWeightedEdge(new, vertex, adjVertex, weight);
         } else {
           GraphAddEdge(new, vertex, adjVertex);
@@ -403,10 +410,7 @@ IndicesSet* GraphGetSetVertices(const Graph* g) {
   return set;
 }
 
-//
-// TO BE COMPLETED
-//
-// for a given vertice v
+// For a given vertice v
 // return the set of its adjacent vertices
 // as a set of vertex indices
 //
@@ -415,12 +419,7 @@ IndicesSet* GraphGetSetAdjacentsTo(const Graph* g, unsigned int v) {
 
   IndicesSet* adjacents_set = IndicesSetCreateEmpty(g->indicesRange);
 
-  struct _Vertex search_dummy;
-  search_dummy.id = v;
-  ListSearch(g->verticesList, (void*)(&search_dummy));
-  struct _Vertex* p = ListGetCurrentItem(g->verticesList);
-
-  List* edges = p->edgesList;
+  List* edges = _GetEdgesList(g, v);
   ListMoveToHead(edges);
 
   for (int i = 0; i < ListGetSize(edges); i++){
@@ -432,9 +431,6 @@ IndicesSet* GraphGetSetAdjacentsTo(const Graph* g, unsigned int v) {
   return adjacents_set;
 }
 
-//
-// TO BE COMPLETED
-//
 // ONLY FOR UNDIRECTED GRAPHS
 //
 // Returns an array of size g->indicesRange storing
