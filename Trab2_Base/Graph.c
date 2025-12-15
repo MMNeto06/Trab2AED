@@ -288,14 +288,20 @@ Graph* GraphGetSubgraph(const Graph* g, IndicesSet* vertSet) {
   // The "empty" subgraph
   Graph* new = GraphCreateEmpty(g->indicesRange, g->isDigraph, g->isWeighted);
 
+  // 1. Adicionar os vértices ao grafo 
   int vertex = IndicesSetGetFirstElem(vertSet);
   while (vertex != -1){
-    // 1. Adicionar os vértices ao grafo 
     GraphAddVertex(new, vertex);
+    vertex = IndicesSetGetNextElem(vertSet);
+  }
 
-    // 2. Adicionar as arestas entre os vértices
+  vertex = IndicesSetGetFirstElem(vertSet);
+  
+  // 2. Adicionar as arestas entre os vértices
+  while (vertex != -1){
     IndicesSet* adjSet = GraphGetSetAdjacentsTo(g, vertex);
     int adjVertex = IndicesSetGetFirstElem(adjSet);
+
     while (adjVertex != -1){
       if (IndicesSetContains(vertSet, adjVertex)){
         if (g->isWeighted){
@@ -305,6 +311,7 @@ Graph* GraphGetSubgraph(const Graph* g, IndicesSet* vertSet) {
           GraphAddEdge(new, vertex, adjVertex);
         }
       }
+
       adjVertex = IndicesSetGetNextElem(adjSet);
     }
     IndicesSetDestroy(&adjSet);
