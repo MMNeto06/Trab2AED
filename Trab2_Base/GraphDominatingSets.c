@@ -107,33 +107,55 @@ IndicesSet* GraphComputeMinWeightDominatingSet(const Graph* g) { //MIGUEL
   assert(g != NULL);
   assert(GraphIsDigraph(g) == 0);
   //perguntar se é necessário assertar que é grafo com pesos, provavelmente sim
-  
+  InstrReset();
+  InstrName[0] = "Comparações";
+  InstrName[1] = "Iterações internas";
+  InstrName[2] = "Iterações globais";
+  InstrName[3] = "Chamadas a outras funções";
+  InstrCount[0] = 0; //medirá comprações
+  InstrCount[1] = 0;
+  InstrCount[2] = 0; 
+  InstrCount[3] = 0;
+
+  InstrCount[3]+=2;
   double* pesos = GraphComputeVertexWeights(g);
   IndicesSet* current = IndicesSetCreateEmpty(GraphGetVertexRange(g));
   double bestPeso = DBL_MAX;
   IndicesSet* result = NULL;
 
   do{
+    InstrCount[3]+=2;
     if(!IndicesSetIsEmpty(current) && GraphIsDominatingSet(g, current)){
       double peso = 0;
       int v = IndicesSetGetFirstElem(current);
+      InstrCount[3]++;
       while(v != -1){
         peso += pesos[v];
         v = IndicesSetGetNextElem(current);
+        InstrCount[1]++;
+        InstrCount[3]++;
       }
 
+      InstrCount[0]++;
       if(peso < bestPeso){
+        InstrCount[0]++;
         if(result != NULL){
+          InstrCount[3]++;
           IndicesSetDestroy(&result);
         }
+        InstrCount[3]++;
         result = IndicesSetCreateCopy(current);
         bestPeso = peso;
       }
 
     }
-
+    InstrCount[0]++;
+    InstrCount[2]++;
+    InstrCount[3]++;
   } while(IndicesSetNextSubset(current) != 0);
 
+  //InstrCalibrate();
+  InstrPrint();
   IndicesSetDestroy(&current);
   free(pesos);
   

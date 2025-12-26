@@ -16,7 +16,7 @@
 
 int main(void) {
   // Reading an undirected graph from file
-  FILE* file = fopen("G_2.txt", "r");
+  FILE* file = fopen("G_2.txt", "r"); //para testar com pesos pode alterar para WG_2.txt
   Graph* g02 = GraphFromFile(file);
   fclose(file);
   // Displaying in DOT format
