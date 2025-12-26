@@ -42,12 +42,17 @@ int GraphIsDominatingSet(const Graph* g, IndicesSet* vertSet) { //MIGUEL
   IndicesSet* allVerts = GraphGetSetVertices(g);
 
   int vIdx = IndicesSetGetFirstElem(allVerts);
+
   while(vIdx!=-1){
+    InstrCount[0]++; // comparação do while
+    InstrCount[1]++; // iteração
+    InstrCount[0]++; // comparação do if
     if(!IndicesSetContains(vertSet, vIdx)){
       IndicesSet* adj = GraphGetSetAdjacentsTo(g,vIdx);
       IndicesSet* adjCopy = IndicesSetCreateCopy(adj);
       IndicesSetIntersection(adjCopy, vertSet);
 
+      InstrCount[0]++;
       if(IndicesSetIsEmpty(adjCopy)){
         IndicesSetDestroy(&adjCopy);
         IndicesSetDestroy(&adj);
@@ -76,26 +81,23 @@ IndicesSet* GraphComputeMinDominatingSet(const Graph* g) {
   InstrReset();
   InstrName[0] = "Comparações";
   InstrName[1] = "Iterações";
-  InstrName[2] = "Chamadas a outras funções";
+  InstrName[2] = NULL; // era chamadas a outras funções, a deletar no final 
   InstrName[3] = NULL;
   InstrCount[0] = 0; //medirá comprações
   InstrCount[1] = 0; //medirá iterações
-  InstrCount[2] = 0; //medirá chamadas a outras funções
  
   IndicesSet* result = NULL;
   IndicesSet* current = IndicesSetCreateEmpty(GraphGetVertexRange(g));
-  InstrCount[2] += 2;
 
   // Na primeira comparação, bestSize deve ser o maior número possível
   // De modo a que tome o valor do primeiro size
   int bestSize = INT_MAX;
 
   do {
-    InstrCount[2]++;
+    InstrCount[0]++;
     if (!IndicesSetIsEmpty(current)){
-      InstrCount[2]++; 
-      if (GraphIsDominatingSet(g, current)){
-        InstrCount[2]++; 
+      InstrCount[0]++; 
+      if (GraphIsDominatingSet(g, current)){ 
         int size = IndicesSetGetNumElems(current);
         
         InstrCount[0]++; 
@@ -103,18 +105,15 @@ IndicesSet* GraphComputeMinDominatingSet(const Graph* g) {
           InstrCount[0]++; 
           if (result != NULL){
             IndicesSetDestroy(&result);
-            InstrCount[2]++;
           }
 
           result = IndicesSetCreateCopy(current); 
-          InstrCount[2]++; 
           bestSize = size; 
         }
       }
     }
 
     InstrCount[1]++; 
-    InstrCount[2]++; 
   } while (IndicesSetNextSubset(current));
 
   InstrPrint();
@@ -130,18 +129,15 @@ IndicesSet* GraphComputeMinDominatingSet(const Graph* g) {
 IndicesSet* GraphComputeMinWeightDominatingSet(const Graph* g) { //MIGUEL
   assert(g != NULL);
   assert(GraphIsDigraph(g) == 0);
-  //perguntar se é necessário assertar que é grafo com pesos, provavelmente sim
+
   InstrReset();
   InstrName[0] = "Comparações";
   InstrName[1] = "Iterações internas";
   InstrName[2] = "Iterações globais";
-  InstrName[3] = "Chamadas a outras funções";
   InstrCount[0] = 0; //medirá comprações
   InstrCount[1] = 0; //medirá iterações internas
   InstrCount[2] = 0; //medirá iterações globais
-  InstrCount[3] = 0; //medirá chamadas a outras funções
 
-  InstrCount[3]+=2;
   double* pesos = GraphComputeVertexWeights(g);
   IndicesSet* current = IndicesSetCreateEmpty(GraphGetVertexRange(g));
 
@@ -152,28 +148,25 @@ IndicesSet* GraphComputeMinWeightDominatingSet(const Graph* g) { //MIGUEL
   IndicesSet* result = NULL;
 
   do{
-    InstrCount[3]++;
+    InstrCount[0]++;
     if(!IndicesSetIsEmpty(current)){
-      InstrCount[3]++;
+      InstrCount[0]++;
       if(GraphIsDominatingSet(g, current)){
         double peso = 0;
         int v = IndicesSetGetFirstElem(current);
-        InstrCount[3]++;
         while(v != -1){
+          InstrCount[0]++;
+          InstrCount[1]++;
           peso += pesos[v];
           v = IndicesSetGetNextElem(current);
-          InstrCount[1]++;
-          InstrCount[3]++;
         }
 
         InstrCount[0]++;
         if(peso < bestPeso){
           InstrCount[0]++;
           if(result != NULL){
-            InstrCount[3]++;
             IndicesSetDestroy(&result);
           }
-          InstrCount[3]++;
           result = IndicesSetCreateCopy(current);
           bestPeso = peso;
         }
@@ -182,10 +175,9 @@ IndicesSet* GraphComputeMinWeightDominatingSet(const Graph* g) { //MIGUEL
     }
       
     InstrCount[2]++;
-    InstrCount[3]++;
+    InstrCount[0]++;
   } while(IndicesSetNextSubset(current));
 
-  //InstrCalibrate();
   InstrPrint();
   IndicesSetDestroy(&current);
   free(pesos);

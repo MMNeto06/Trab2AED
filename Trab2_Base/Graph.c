@@ -24,6 +24,7 @@
 
 #include "IndicesSet.h"
 #include "SortedList.h"
+#include "instrumentation.h"
 
 struct _Vertex {
   unsigned int id;
@@ -430,6 +431,8 @@ IndicesSet* GraphGetSetAdjacentsTo(const Graph* g, unsigned int v) {
   ListMoveToHead(edges);
 
   for (int i = 0; i < ListGetSize(edges); i++){
+    InstrCount[0]++; // comparação
+    InstrCount[1]++; // iteração
     struct _Edge* edge = ListGetCurrentItem(edges);
     IndicesSetAdd(adjacents_set, (uint16_t)edge->adjVertex);
     ListMoveToNext(edges);
@@ -456,7 +459,7 @@ double* GraphComputeVertexWeights(const Graph* g) { //MIGUEL
   }
 
   List* vertexList = g->verticesList;
-  
+
   if(ListIsEmpty(vertexList)) return weightsArray;
   
   ListMoveToHead(vertexList); 
