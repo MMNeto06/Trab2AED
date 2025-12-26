@@ -16,6 +16,26 @@
 
 #define MAX_NUM_VERTS 16
 
+//
+// Create a graph that is a cycle with n vertices
+// Created as an auxiliarry function to test graph complexity
+//
+Graph* GraphCreateCycle(unsigned int n) {
+    if(n < 3){
+      return NULL;
+    };
+
+    Graph* g = GraphCreate(n, 0, 0);
+
+    for (unsigned int i = 0; i < n; i++) {
+        unsigned int next = (i + 1) % n;
+        GraphAddEdge(g, i, next);
+    }
+
+    GraphCheckInvariants(g);
+    return g;
+}
+
 int main(void) {
   // Reading an undirected graph from file
   FILE* file = fopen("G_2.txt", "r"); //para testar com pesos pode alterar para WG_2.txt
@@ -111,11 +131,14 @@ int main(void) {
   GraphDestroy(&g03);
 
   for(int i = 1; i<=MAX_NUM_VERTS; i*=2){
-       Graph* g = GraphCreateComplete(i,0); //change if needed
+       printf("Grafo com %d vértices\n", i);
+       //Graph* g = GraphCreate(i,0,0); //grafo vazio com i vértices e 0 arestas
+       //Graph* g = GraphCreateComplete(i,0); //grafo completo de i vértices
+       Graph* g = GraphCreateCycle(i);//ciclo de i vértices
        printf("\n");
 
+       if(g==NULL) continue;
        GraphCheckInvariants(g);
-
        printf("Finding a MIN dominating set\n");
        IndicesSet* mdset = GraphComputeMinDominatingSet(g);
        IndicesSetDisplay(mdset);

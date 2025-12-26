@@ -77,6 +77,7 @@ IndicesSet* GraphComputeMinDominatingSet(const Graph* g) {
   InstrName[0] = "Comparações";
   InstrName[1] = "Iterações";
   InstrName[2] = "Chamadas a outras funções";
+  InstrName[3] = NULL;
   InstrCount[0] = 0; //medirá comprações
   InstrCount[1] = 0; //medirá iterações
   InstrCount[2] = 0; //medirá chamadas a outras funções
@@ -116,6 +117,7 @@ IndicesSet* GraphComputeMinDominatingSet(const Graph* g) {
     InstrCount[2]++; 
   } while (IndicesSetNextSubset(current));
 
+  InstrPrint();
   IndicesSetDestroy(&current);
 
   return result;
