@@ -72,26 +72,48 @@ int GraphIsDominatingSet(const Graph* g, IndicesSet* vertSet) { //MIGUEL
 IndicesSet* GraphComputeMinDominatingSet(const Graph* g) {
   assert(g != NULL);
   assert(GraphIsDigraph(g) == 0);
-
+  // Análise de complexidade
+  InstrReset();
+  InstrName[0] = "Comparações";
+  InstrName[1] = "Iterações";
+  InstrName[2] = "Chamadas a outras funções";
+  InstrCount[0] = 0; //medirá comprações
+  InstrCount[1] = 0; //medirá iterações
+  InstrCount[2] = 0; //medirá chamadas a outras funções
+ 
   IndicesSet* result = NULL;
   IndicesSet* current = IndicesSetCreateEmpty(GraphGetVertexRange(g));
+  InstrCount[2] += 2;
 
   // Na primeira comparação, bestSize deve ser o maior número possível
   // De modo a que tome o valor do primeiro size
   int bestSize = INT_MAX;
 
   do {
-    if (!IndicesSetIsEmpty(current) && GraphIsDominatingSet(g, current)){
-      int size = IndicesSetGetNumElems(current);
+    InstrCount[2]++;
+    if (!IndicesSetIsEmpty(current)){
+      InstrCount[2]++; 
+      if (GraphIsDominatingSet(g, current)){
+        InstrCount[2]++; 
+        int size = IndicesSetGetNumElems(current);
+        
+        InstrCount[0]++; 
+        if (size < bestSize){
+          InstrCount[0]++; 
+          if (result != NULL){
+            IndicesSetDestroy(&result);
+            InstrCount[2]++;
+          }
 
-      if (size < bestSize){
-        if (result != NULL)
-          IndicesSetDestroy(&result);
-
-        result = IndicesSetCreateCopy(current); 
-        bestSize = size; 
+          result = IndicesSetCreateCopy(current); 
+          InstrCount[2]++; 
+          bestSize = size; 
+        }
       }
     }
+
+    InstrCount[1]++; 
+    InstrCount[2]++; 
   } while (IndicesSetNextSubset(current));
 
   IndicesSetDestroy(&current);
@@ -113,14 +135,18 @@ IndicesSet* GraphComputeMinWeightDominatingSet(const Graph* g) { //MIGUEL
   InstrName[2] = "Iterações globais";
   InstrName[3] = "Chamadas a outras funções";
   InstrCount[0] = 0; //medirá comprações
-  InstrCount[1] = 0;
-  InstrCount[2] = 0; 
-  InstrCount[3] = 0;
+  InstrCount[1] = 0; //medirá iterações internas
+  InstrCount[2] = 0; //medirá iterações globais
+  InstrCount[3] = 0; //medirá chamadas a outras funções
 
   InstrCount[3]+=2;
   double* pesos = GraphComputeVertexWeights(g);
   IndicesSet* current = IndicesSetCreateEmpty(GraphGetVertexRange(g));
+
+  // Na primeira comparação, bestPeso deve ser o maior número possível
+  // De modo a que tome o valor do primeiro peso
   double bestPeso = DBL_MAX;
+
   IndicesSet* result = NULL;
 
   do{
