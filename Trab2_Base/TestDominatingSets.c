@@ -36,6 +36,25 @@ Graph* GraphCreateCycle(unsigned int n) {
     return g;
 }
 
+//
+// Create a graph that is a single path with n vertices
+// Created as an auxiliarry function to test graph complexity
+//
+Graph* GraphCreatePath(unsigned int n) {
+    /*if(n < 2){
+      return NULL;
+    };*/
+
+    Graph* g = GraphCreate(n, 0, 0);
+
+    for (unsigned int i = 0; i < n-1; i++) {
+       GraphAddEdge(g, i, i+1);
+    }
+
+    GraphCheckInvariants(g);
+    return g;
+}
+
 int main(void) {
   // Reading an undirected graph from file
   FILE* file = fopen("G_2.txt", "r"); //para testar com pesos pode alterar para WG_2.txt
@@ -134,14 +153,15 @@ int main(void) {
        printf("Grafo com %d vértices\n", i);
        //Graph* g = GraphCreate(i,0,0); //grafo vazio com i vértices e 0 arestas
        //Graph* g = GraphCreateComplete(i,0); //grafo completo de i vértices
-       Graph* g = GraphCreateCycle(i);//ciclo de i vértices
+       //Graph* g = GraphCreateCycle(i);//ciclo de i vértices
+       Graph* g = GraphCreatePath(i);//caminho de i vertices;
        printf("\n");
 
        if(g==NULL) continue;
        GraphCheckInvariants(g);
-       printf("Finding a MIN dominating set\n");
+       /*printf("Finding a MIN dominating set\n");
        IndicesSet* mdset = GraphComputeMinDominatingSet(g);
-       IndicesSetDisplay(mdset);
+       IndicesSetDisplay(mdset);*/
 
        printf("Finding a MIN WEIGHT dominating set\n");
        IndicesSet* mwdset = GraphComputeMinWeightDominatingSet(g);
