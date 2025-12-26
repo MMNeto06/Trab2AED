@@ -150,35 +150,38 @@ IndicesSet* GraphComputeMinWeightDominatingSet(const Graph* g) { //MIGUEL
   IndicesSet* result = NULL;
 
   do{
-    InstrCount[3]+=2;
-    if(!IndicesSetIsEmpty(current) && GraphIsDominatingSet(g, current)){
-      double peso = 0;
-      int v = IndicesSetGetFirstElem(current);
+    InstrCount[3]++;
+    if(!IndicesSetIsEmpty(current)){
       InstrCount[3]++;
-      while(v != -1){
-        peso += pesos[v];
-        v = IndicesSetGetNextElem(current);
-        InstrCount[1]++;
+      if(GraphIsDominatingSet(g, current)){
+        double peso = 0;
+        int v = IndicesSetGetFirstElem(current);
         InstrCount[3]++;
-      }
-
-      InstrCount[0]++;
-      if(peso < bestPeso){
-        InstrCount[0]++;
-        if(result != NULL){
+        while(v != -1){
+          peso += pesos[v];
+          v = IndicesSetGetNextElem(current);
+          InstrCount[1]++;
           InstrCount[3]++;
-          IndicesSetDestroy(&result);
         }
-        InstrCount[3]++;
-        result = IndicesSetCreateCopy(current);
-        bestPeso = peso;
-      }
 
+        InstrCount[0]++;
+        if(peso < bestPeso){
+          InstrCount[0]++;
+          if(result != NULL){
+            InstrCount[3]++;
+            IndicesSetDestroy(&result);
+          }
+          InstrCount[3]++;
+          result = IndicesSetCreateCopy(current);
+          bestPeso = peso;
+        }
+
+      }
     }
-    InstrCount[0]++;
+      
     InstrCount[2]++;
     InstrCount[3]++;
-  } while(IndicesSetNextSubset(current) != 0);
+  } while(IndicesSetNextSubset(current));
 
   //InstrCalibrate();
   InstrPrint();

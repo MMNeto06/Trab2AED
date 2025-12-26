@@ -14,6 +14,8 @@
 #include "GraphDominatingSets.h"
 #include "IndicesSet.h"
 
+#define MAX_NUM_VERTS 16
+
 int main(void) {
   // Reading an undirected graph from file
   FILE* file = fopen("G_2.txt", "r"); //para testar com pesos pode alterar para WG_2.txt
@@ -108,5 +110,21 @@ int main(void) {
   GraphDestroy(&g02);
   GraphDestroy(&g03);
 
+  for(int i = 1; i<=MAX_NUM_VERTS; i*=2){
+       Graph* g = GraphCreateComplete(i,0); //change if needed
+       printf("\n");
+
+       GraphCheckInvariants(g);
+
+       printf("Finding a MIN dominating set\n");
+       IndicesSet* mdset = GraphComputeMinDominatingSet(g);
+       IndicesSetDisplay(mdset);
+
+       printf("Finding a MIN WEIGHT dominating set\n");
+       IndicesSet* mwdset = GraphComputeMinWeightDominatingSet(g);
+       IndicesSetDisplay(mwdset);
+
+       GraphDestroy(&g);
+  }
   return 0;
 }
