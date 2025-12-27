@@ -151,21 +151,21 @@ int main(void) {
 
   for(int i = 1; i<=MAX_NUM_VERTS; i*=2){
        printf("Grafo com %d vértices\n", i);
-       Graph* g = GraphCreate(i,0,0); //grafo vazio com i vértices e 0 arestas
+       //Graph* g = GraphCreate(i,0,0); //grafo vazio com i vértices e 0 arestas
        //Graph* g = GraphCreateComplete(i,0); //grafo completo de i vértices
        //Graph* g = GraphCreateCycle(i);//ciclo de i vértices
-       //Graph* g = GraphCreatePath(i);//caminho de i vertices;
+       Graph* g = GraphCreatePath(i);//caminho de i vertices;
        printf("\n");
 
        if(g==NULL) continue;
        GraphCheckInvariants(g);
-       printf("Finding a MIN dominating set\n");
+       /*printf("Finding a MIN dominating set\n");
        IndicesSet* mdset = GraphComputeMinDominatingSet(g);
-       IndicesSetDisplay(mdset);
+       IndicesSetDisplay(mdset);*/
 
-       /*printf("Finding a MIN WEIGHT dominating set\n");
+       printf("Finding a MIN WEIGHT dominating set\n");
        IndicesSet* mwdset = GraphComputeMinWeightDominatingSet(g);
-       IndicesSetDisplay(mwdset);*/
+       IndicesSetDisplay(mwdset);
 
        GraphDestroy(&g);
   }

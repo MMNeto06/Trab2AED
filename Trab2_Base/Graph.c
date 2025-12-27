@@ -448,7 +448,7 @@ IndicesSet* GraphGetSetAdjacentsTo(const Graph* g, unsigned int v) {
 // does not exist in the given graph
 // The weight of a vertex is the sum of the weights of its edges
 // If edges have no weights, the weight of a vertex is its degree
-double* GraphComputeVertexWeights(const Graph* g) { //MIGUEL
+double* GraphComputeVertexWeights(const Graph* g) {
   assert(GraphIsDigraph(g) == 0); //ONLY FOR UNDIRECTED GRAPHS!!! 
   double* weightsArray = malloc(g->indicesRange * sizeof(double));
   if (weightsArray == NULL) abort();

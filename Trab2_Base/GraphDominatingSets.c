@@ -34,7 +34,7 @@
 // A dominating set is a set of graph vertices such that every other
 // graph vertex not in the set is adjacent to a graph vertex in the set
 //
-int GraphIsDominatingSet(const Graph* g, IndicesSet* vertSet) { //MIGUEL
+int GraphIsDominatingSet(const Graph* g, IndicesSet* vertSet) {
   assert(g != NULL);
   assert(GraphIsDigraph(g) == 0);
   assert(IndicesSetIsEmpty(vertSet) == 0);
@@ -160,6 +160,7 @@ IndicesSet* GraphComputeMinWeightDominatingSet(const Graph* g) { //MIGUEL
           peso += pesos[v];
           v = IndicesSetGetNextElem(current);
         }
+        InstrCount[0]++; //comparação final do while, quando este dá falso
 
         InstrCount[0]++;
         if(peso < bestPeso){
