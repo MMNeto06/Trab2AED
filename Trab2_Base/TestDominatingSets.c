@@ -55,6 +55,19 @@ Graph* GraphCreatePath(unsigned int n) {
     return g;
 }
 
+Graph* GraphCreateStar(unsigned int n) {
+  Graph* g = GraphCreate(n, 0, 0);
+
+  unsigned int center = 0;
+
+  for (unsigned int i = 1; i < n; i++) {
+    GraphAddEdge(g, center, i);
+  }
+
+  GraphCheckInvariants(g);
+  return g;
+}
+
 int main(void) {
   // Reading an undirected graph from file
   FILE* file = fopen("G_2.txt", "r"); //para testar com pesos pode alterar para WG_2.txt
@@ -154,7 +167,8 @@ int main(void) {
        //Graph* g = GraphCreate(i,0,0); //grafo vazio com i vértices e 0 arestas
        //Graph* g = GraphCreateComplete(i,0); //grafo completo de i vértices
        //Graph* g = GraphCreateCycle(i);//ciclo de i vértices
-       Graph* g = GraphCreatePath(i);//caminho de i vertices;
+       //Graph* g = GraphCreatePath(i);//caminho de i vertices;
+       Graph* g = GraphCreateStar(i);//gráfico estrela de i vértices, todas as arestas conectam à central
        printf("\n");
 
        if(g==NULL) continue;

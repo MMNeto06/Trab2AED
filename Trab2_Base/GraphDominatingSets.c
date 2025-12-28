@@ -151,27 +151,27 @@ IndicesSet* GraphComputeMinWeightDominatingSet(const Graph* g) { //MIGUEL
     InstrCount[0]++;
     if(!IndicesSetIsEmpty(current)){
       InstrCount[0]++;
-      if(GraphIsDominatingSet(g, current)){
-        double peso = 0;
-        int v = IndicesSetGetFirstElem(current);
-        while(v != -1){
-          InstrCount[0]++;
-          InstrCount[1]++;
-          peso += pesos[v];
-          v = IndicesSetGetNextElem(current);
-        }
-        InstrCount[0]++; //comparação final do while, quando este dá falso
-
+      
+      double peso = 0;
+      int v = IndicesSetGetFirstElem(current);
+      while(v != -1){
         InstrCount[0]++;
-        if(peso < bestPeso){
-          InstrCount[0]++;
+        InstrCount[1]++;
+        peso += pesos[v];
+        v = IndicesSetGetNextElem(current);
+      }
+      InstrCount[0]++; //comparação final do while, quando este dá falso
+
+      InstrCount[0]++;
+      if(peso < bestPeso){
+        InstrCount[0]++;
+        if(GraphIsDominatingSet(g, current)){
           if(result != NULL){
             IndicesSetDestroy(&result);
           }
           result = IndicesSetCreateCopy(current);
           bestPeso = peso;
         }
-
       }
     }
       
