@@ -81,8 +81,7 @@ IndicesSet* GraphComputeMinDominatingSet(const Graph* g) {
   InstrReset();
   InstrName[0] = "Comparações";
   InstrName[1] = "Iterações";
-  InstrName[2] = NULL; // era chamadas a outras funções, a deletar no final 
-  InstrName[3] = NULL;
+  InstrName[2] = NULL; // remove o valor dado na função seguinte
   InstrCount[0] = 0; //medirá comprações
   InstrCount[1] = 0; //medirá iterações
  
@@ -96,13 +95,12 @@ IndicesSet* GraphComputeMinDominatingSet(const Graph* g) {
   do {
     InstrCount[0]++;
     if (!IndicesSetIsEmpty(current)){
+      int size = IndicesSetGetNumElems(current);
       InstrCount[0]++; 
-      if (GraphIsDominatingSet(g, current)){ 
-        int size = IndicesSetGetNumElems(current);
-        
+      if (size < bestSize){
         InstrCount[0]++; 
-        if (size < bestSize){
-          InstrCount[0]++; 
+        if (GraphIsDominatingSet(g, current)){
+          InstrCount[0]++;
           if (result != NULL){
             IndicesSetDestroy(&result);
           }
@@ -114,6 +112,7 @@ IndicesSet* GraphComputeMinDominatingSet(const Graph* g) {
     }
 
     InstrCount[1]++; 
+    InstrCount[0]++; 
   } while (IndicesSetNextSubset(current));
 
   InstrPrint();
@@ -166,6 +165,7 @@ IndicesSet* GraphComputeMinWeightDominatingSet(const Graph* g) { //MIGUEL
       if(peso < bestPeso){
         InstrCount[0]++;
         if(GraphIsDominatingSet(g, current)){
+          InstrCount[0]++;
           if(result != NULL){
             IndicesSetDestroy(&result);
           }
